@@ -18,6 +18,9 @@ namespace Server2
         public static int Port;
         static void Main(string[] args)
         {
+            users.Add(new User("klipach", "Klipach", @"A:\Авитехникум"));
+            Console.WriteLine("Введите Ip adress серера:");
+
         }
         public static bool AutoRiazationUser(string login, string password)
         {
