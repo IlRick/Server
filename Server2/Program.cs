@@ -16,9 +16,9 @@ namespace Server2
         public static List<User> users = new List<User>();
         public static IPAddress IpAddress;
         public static int Port;
-        static void Main(string[] args)
+        static void Main(string[] args) 
         {
-            users.Add(new User("klipach", "Klipach", @"A:\Авитехникум"));
+            users.Add(new User("klipach", "Klipach", @"A:\Авитехникум")); 
             Console.WriteLine("Введите Ip adress серера:");
             string sIpAdress= Console.ReadLine();
             Console.WriteLine("Введите порт:");
