@@ -20,6 +20,15 @@ namespace Server2
         {
             users.Add(new User("klipach", "Klipach", @"A:\Авитехникум"));
             Console.WriteLine("Введите Ip adress серера:");
+            string sIpAdress= Console.ReadLine();
+            Console.WriteLine("Введите порт:");
+            string sPort= Console.ReadLine();
+            if(int.TryParse(sPort,out Port)&& IPAddress.TryParse(sIpAdress,out IpAddress))
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Данные успешно ведены. Запускаю сервер.");
+                StartServer();
+            }
 
         }
         public static bool AutoRiazationUser(string login, string password)
