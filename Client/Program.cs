@@ -20,6 +20,19 @@ namespace Client
 
         static void Main(string[] args)
         {
+            Console.Write("Введите IP адрес сервера:");
+            string sIpAdres = Console.ReadLine();
+            Console.Write("ВВедите порт: ");
+            string sPort = Console.ReadLine();
+            if (int.TryParse(sPort, out Port)&& IPAddress.TryParse(sIpAdres, out IpAdress))
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Данные успешно введены. Подключаюсь к серверу");
+                while (true)
+                {
+                    ConnectServer();
+                }
+            }
         }
 
         public static bool CheckCommand(string message)
