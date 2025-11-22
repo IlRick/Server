@@ -1,45 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft;
 using Common;
+using System.Net;
+using System.Net.Sockets;
 using Newtonsoft.Json;
+using System.Text;
+using System.Collections.Generic;
+using System;
+using System.IO;
 
 namespace Client
 {
-    public class Program
+    class Program
     {
+
         public static IPAddress IpAdress;
         public static int Port;
         public static int Id = -1;
-
-        static void Main(string[] args)
-        {
-            Console.Write("Введите IP адрес сервера:");
-            string sIpAdres = Console.ReadLine();
-            Console.Write("ВВедите порт: ");
-            string sPort = Console.ReadLine();
-            if (int.TryParse(sPort, out Port)&& IPAddress.TryParse(sIpAdres, out IpAdress))
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Данные успешно введены. Подключаюсь к серверу");
-                while (true)
-                {
-                    ConnectServer();
-                }
-            }
-        }
-
         public static bool CheckCommand(string message)
         {
             bool BCommand = false;
-            string[] DataMessage = message.Split(new string[1] {" "}, StringSplitOptions.None);
-            if ( DataMessage.Length > 0)
+            string[] DataMessage = message.Split(new string[1] { " " }, StringSplitOptions.None);
+            if (DataMessage.Length > 0)
             {
                 string Command = DataMessage[0];
                 if (Command == "connect")
@@ -47,8 +28,8 @@ namespace Client
                     if (DataMessage.Length != 3)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Использование: connect [login] [password]\nПример: connect User1 P@ssw0rd");
-                        BCommand = false;
+                        Console.WriteLine("Использование: connect[login] [password \nПример: connect User1 P@ssw0rd]");
+                        BCommand = true;
                     }
                     else
                         BCommand = true;
@@ -59,26 +40,24 @@ namespace Client
                 {
                     if (DataMessage.Length == 1)
                     {
-                        Console.ForegroundColor= ConsoleColor.Red;
-                        Console.WriteLine("Использование: get [NameFile]\nПример: get Test.txt");
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Использование: get [NameFIle]\nПример:get Test.txt");
                         BCommand = false;
-
                     }
                     else
-                        BCommand= true;
+                        BCommand = true;
                 }
                 else if (Command == "set")
                 {
                     if (DataMessage.Length == 1)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Использование: get [NameFile]\nПример: get Test.txt");
+                        Console.WriteLine("Использование: set [NameFile]\nПример: set Test.txt");
                         BCommand = false;
                     }
                     else
                         BCommand = true;
                 }
-                   
             }
             return BCommand;
         }
@@ -90,7 +69,8 @@ namespace Client
                 Socket socket = new Socket(
                     AddressFamily.InterNetwork,
                     SocketType.Stream,
-                    ProtocolType.Tcp);
+                    ProtocolType.Tcp
+                    );
                 socket.Connect(endPoint);
                 if (socket.Connected)
                 {
@@ -126,18 +106,18 @@ namespace Client
                         int BytesRec = socket.Receive(bytes);
                         string messageServer = Encoding.UTF8.GetString(bytes, 0, BytesRec);
                         ViewModelMessage viewModelMessage = JsonConvert.DeserializeObject<ViewModelMessage>(messageServer);
-                        if (viewModelMessage.Command == "autorization")
+                        if (viewModelMessage.Command == "authorization")
                             Id = int.Parse(viewModelMessage.Data);
                         else if (viewModelMessage.Command == "message")
                             Console.WriteLine(viewModelMessage.Data);
-                        else if(viewModelMessage.Command =="cd")
+                        else if (viewModelMessage.Command == "cd")
                         {
-                            List<string> FolderFiles = new List<string>();
-                            FolderFiles = JsonConvert.DeserializeObject<List<string>>(viewModelMessage.Data);
-                            foreach (string Name in FolderFiles)
+                            List<string> FoldersFiles = new List<string>();
+                            FoldersFiles = JsonConvert.DeserializeObject<List<string>>(viewModelMessage.Data);
+                            foreach (string Name in FoldersFiles)
                                 Console.WriteLine(Name);
                         }
-                        else if(viewModelMessage.Command =="file")
+                        else if (viewModelMessage.Command == "file")
                         {
                             string[] DataMessage = viewModelSend.Message.Split(new string[1] { " " }, StringSplitOptions.None);
                             string getFile = "";
@@ -145,21 +125,39 @@ namespace Client
                                 if (getFile == "")
                                     getFile = DataMessage[i];
                                 else
-                                    getFile += " " + DataMessage[i];
-                            byte[] bytesFile = JsonConvert.DeserializeObject<byte[]>(viewModelMessage.Data);
-                            File.WriteAllBytes(getFile, bytesFile);
+                                    getFile = " " + DataMessage[i];
+                            byte[] byteFile = JsonConvert.DeserializeObject<byte[]>(viewModelMessage.Data);
+                            File.WriteAllBytes(getFile, byteFile);
                         }
                     }
                 }
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Подключение не удалось");
+                    Console.WriteLine("Подключение удалось");
                 }
+                socket.Close();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;Console.WriteLine(ex.Message);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Что-то случилось: " + ex.Message);
+            }
+        }
+        static void Main(string[] args)
+        {
+            Console.Write("Введите IP адрес сервера: ");
+            string sIpAdress = Console.ReadLine();
+            Console.WriteLine("Введите порт: ");
+            string sPort = Console.ReadLine();
+            if (int.TryParse(sPort, out Port) && IPAddress.TryParse(sIpAdress, out IpAdress))
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Данные успешно введены. Подключаюсь к сервер.");
+                while (true)
+                {
+                    ConnectServer();
+                }
             }
         }
     }
