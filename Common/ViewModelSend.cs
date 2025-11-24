@@ -9,7 +9,14 @@ namespace Common
     public class ViewModelSend
     {
         public string Message { get; set; }
-        public int Id { get; set; } 
+        public int Id { get; set; }
+
+        public ViewModelSend()
+        {
+            Message = "";
+            Id = -1;
+        }
+
         public ViewModelSend(string message, int id)
         {
             Message = message;
