@@ -9,6 +9,11 @@ using System.Text;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Common;
+using MySqlConnector;
+using MySqlConnection = MySql.Data.MySqlClient.MySqlConnection;
+using MySqlCommand = MySql.Data.MySqlClient.MySqlCommand;
+using MySqlDataReader = MySql.Data.MySqlClient.MySqlDataReader;
+using MySqlException = MySql.Data.MySqlClient.MySqlException;
 
 namespace Server2
 {
@@ -16,7 +21,7 @@ namespace Server2
     {
         private static IPAddress ipAddress;
         private static int port;
-        private static string connectionString = "Server=localhost;Database=ftp_server;Uid=root;Pwd=;CharSet=utf8;";
+        private static string connectionString = "Server=127.0.0.1;Database=ftp_server;Uid=root;Pwd=;CharSet=utf8;";
 
         static void Main(string[] args)
         {

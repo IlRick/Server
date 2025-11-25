@@ -7,6 +7,7 @@ using System.Text;
 using System.Collections.Generic;
 using System;
 using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace Client
 {
@@ -58,7 +59,7 @@ namespace Client
                         ShowHistory();
                         break;
                     case "0":
-                        Console.WriteLine("\nДо свидания!");
+                        Console.WriteLine("Пока!");
                         return;
                     default:
                         Console.ForegroundColor = ConsoleColor.Red;
@@ -213,34 +214,36 @@ namespace Client
 
             ViewModelMessage response = SendRequest("cd");
 
-            if (response != null)
+            if (response != null && response.TypeMessage == "cd")
             {
-                if (response.TypeMessage == "cd")
+                var obj = JObject.Parse(response.Message);
+
+                List<string> files = obj["items"].ToObject<List<string>>();
+                string currentPath = obj["currentPath"]?.ToString();
+
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine($"\nПапка: {currentPath}");
+                if (files.Count == 0)
                 {
-                    List<string> files = JsonConvert.DeserializeObject<List<string>>(response.Message);
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine("\nСодержимое папки");
-                    if (files.Count == 0)
-                    {
-                        Console.WriteLine("  (пусто)");
-                    }
-                    else
-                    {
-                        foreach (string file in files)
-                        {
-                            Console.WriteLine($"  {file}");
-                        }
-                    }
-                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine("  (пусто)");
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine($"\n{response.Message}");
-                    Console.ForegroundColor = ConsoleColor.White;
+                    foreach (string file in files)
+                    {
+                        Console.WriteLine($"  {file}");
+                    }
                 }
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            else if (response != null)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"\n{response.Message}");
+                Console.ForegroundColor = ConsoleColor.White;
             }
         }
+        
 
         static void ShowHistory()
         {
